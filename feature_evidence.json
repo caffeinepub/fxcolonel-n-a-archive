@@ -1,0 +1,27 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-the-frontend-publish-toggle-publish-action-in-articlelistview-and-articleeditor-so-that-the-mutation-correctly-calls-the-backend-publish-endpoint-awaits-the-result-and-invalidates-refetches-the-article-list-query-to-reflect-the-updated-published-status-in-the-ui",
+      "featureTitle": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "files": [
+        "frontend/src/components/ArticleEditor.tsx",
+        "frontend/src/components/ArticleListView.tsx",
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

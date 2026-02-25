@@ -1,0 +1,50 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-25T10:37:10.787Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Fix the backend publish logic so that calling the publish action on an article or draft correctly updates its status to published and persists the change in stable storage. Ensure the publish update function returns a success result and that the published flag/status is correctly set on the article record.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/ArticleListView.tsx",
+          "frontend/src/components/ArticleEditor.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/ArticleListView.tsx",
+          "frontend/src/components/ArticleEditor.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/components/ArticleEditor.tsx",
+    "frontend/src/components/ArticleListView.tsx",
+    "frontend/src/hooks/useQueries.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

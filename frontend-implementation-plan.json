@@ -1,0 +1,34 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix article/draft publishing — publish action not persisting",
+  "requirements": [
+    {
+      "id": "REQ-2",
+      "summary": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "acceptanceCriteria": [
+        "Clicking the publish button in ArticleListView triggers the correct backend call and the article status visibly updates in the list without a page reload.",
+        "Clicking save/publish in ArticleEditor correctly calls the publish mutation and shows success feedback.",
+        "After publishing, the draft badge is removed from the article card.",
+        "Error states are surfaced to the user if publishing fails."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add or fix the useTogglePublishArticle mutation hook to correctly call actor.togglePublishArticle(id, newStatus), properly handle async completion, and invalidate the article list query keys ['publishedArticles'], ['latestArticles'], and ['searchArticles'] upon success. Ensure error states are returned and can be consumed by UI components. Verify that the mutation waits for the backend call to complete before invalidating queries."
+        },
+        {
+          "path": "frontend/src/components/ArticleListView.tsx",
+          "operation": "modify",
+          "description": "Update the publish toggle handler to use the useTogglePublishArticle mutation hook, passing the article id and the new ArticleStatus. Ensure the mutation is awaited, success feedback is shown via toast, and error states trigger user-visible error messages. Confirm that after a successful mutation the article list refetches automatically and the draft badge disappears from the updated article card."
+        },
+        {
+          "path": "frontend/src/components/ArticleEditor.tsx",
+          "operation": "modify",
+          "description": "Update the save/publish action to call the useTogglePublishArticle mutation when the user intends to publish. Ensure the mutation completes before showing success feedback, and display error messages to the user if the publish call fails. Verify that after publishing, the editor reflects the updated article status and the user receives clear confirmation."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Project with article publishing functionality. User is experiencing a persistent bug where publishing articles/drafts is not working.",
+  "architectural_notes": [],
+  "known_issues": [
+    "Publishing articles/drafts is not working — publish action fails to publish content"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-fix-the-frontend-publish-toggle-publish-action-in-articlelistview-and-articleeditor-so-that-the-mutation-correctly-calls-the-backend-publish-endpoint-awaits-the-result-and-invalidates-refetches-the-article-list-query-to-reflect-the-updated-published-status-in-the-ui",
+      "title": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Fix the backend publish logic so that calling the publish action on an article or draft correctly updates its status to published and persists the change in stable storage. Ensure the publish update function returns a success result and that the published flag/status is correctly set on the article record.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Fix article/draft publishing — publish action not persisting",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
