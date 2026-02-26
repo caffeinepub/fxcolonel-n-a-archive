@@ -1,2 +1,3 @@
-# fxcolonel-n-a-archive
-Exported from Caffeine project: FxColonel N/A Archive
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`
