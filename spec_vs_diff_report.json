@@ -1,23 +1,14 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T10:37:10.785Z",
-  "summary": "The diff addresses REQ-2 (frontend) comprehensively: ArticleEditor now calls togglePublishArticle after save, ArticleListView uses useTogglePublishArticle with proper error/success feedback, and useQueries.ts fixes the await and query invalidation. However, REQ-1 (backend) — fixing the backend publish logic, stable storage persistence, and correct return values — is entirely absent from the diff. No backend files were modified.",
-  "missing_requirements": [
-    {
-      "id": "REQ-1",
-      "requirement": "Fix the backend publish logic so that calling the publish action on an article or draft correctly updates its status to published and persists the change in stable storage. Ensure the publish update function returns a success result and that the published flag/status is correctly set on the article record.",
-      "reason": "No backend files were added or modified in the diff. The diff only touches frontend/src/components/ArticleEditor.tsx, frontend/src/components/ArticleListView.tsx, frontend/src/hooks/useQueries.ts, and auxiliary summary/state files. The backend publish logic, stable storage persistence, and return values are entirely unaddressed.",
-      "evidence": []
-    }
-  ],
+  "generatedAt": "2026-02-25T15:31:05.435Z",
+  "summary": "The diff correctly removes the 'caffeine.ai' attribution from the Footer component. The updated Footer.tsx no longer contains any reference to 'caffeine.ai' or 'Built with love', while retaining the brand logo, navigation links, trading disclaimer, and copyright notice. All acceptance criteria for REQ-1 appear to be met.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.92,
+  "confidence": 0.97,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/ArticleEditor.tsx",
-    "frontend/src/components/ArticleListView.tsx",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/components/Footer.tsx",
     "project_state.json"
   ]
 }

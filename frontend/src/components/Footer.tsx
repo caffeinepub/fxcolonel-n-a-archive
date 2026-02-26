@@ -1,21 +1,21 @@
 import React from "react";
 import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const appId = encodeURIComponent(
-    typeof window !== "undefined" ? window.location.hostname : "fx-colonel"
-  );
 
   return (
     <footer className="bg-charcoal border-t border-border mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand — text only */}
+          {/* Brand — logo image */}
           <div>
-            <span className="font-serif text-lg font-bold text-gold">FX Colonel</span>
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            <img
+              src="https://fxcolonelpipsnetwork.com/logo-dark.png"
+              alt="FX Colonel Pips Network"
+              className="h-10 w-auto object-contain mb-3"
+            />
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Premium forex analysis and market insights for serious traders.
             </p>
           </div>
@@ -57,22 +57,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-8 pt-6 border-t border-border flex items-center justify-center">
           <p className="text-xs text-muted-foreground">
-            © {year} FX Colonel. All rights reserved.
-          </p>
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            Built with{" "}
-            <Heart className="w-3 h-3 text-gold fill-gold" />{" "}
-            using{" "}
-            <a
-              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gold hover:underline"
-            >
-              caffeine.ai
-            </a>
+            © {year} FX Colonel Pips Network. All rights reserved.
           </p>
         </div>
       </div>

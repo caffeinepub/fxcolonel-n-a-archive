@@ -92,6 +92,7 @@ export default function ArticleDetailModal({ article, isOpen, onClose }: Article
   const touchStartY = useRef<number>(0);
   const touchCurrentY = useRef<number>(0);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -111,19 +112,27 @@ export default function ArticleDetailModal({ article, isOpen, onClose }: Article
     };
   }, [isOpen]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  // Drag handlers — only attached to the drag handle / header area
+  const handleDragStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
     touchStartY.current = e.touches[0].clientY;
+    touchCurrentY.current = e.touches[0].clientY;
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleDragMove = (e: React.TouchEvent) => {
+    if (!isDragging.current) return;
     touchCurrentY.current = e.touches[0].clientY;
     const delta = touchCurrentY.current - touchStartY.current;
     if (delta > 0 && sheetRef.current) {
+      // Prevent the page from scrolling while dragging the handle
+      e.preventDefault();
       sheetRef.current.style.transform = `translateY(${delta}px)`;
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleDragEnd = () => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
     const delta = touchCurrentY.current - touchStartY.current;
     if (delta > 100) {
       onClose();
@@ -154,18 +163,25 @@ export default function ArticleDetailModal({ article, isOpen, onClose }: Article
           animating ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ willChange: 'transform' }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         <div className="bg-card rounded-t-2xl border-t border-border max-h-[92vh] flex flex-col overflow-hidden">
-          {/* Drag Handle */}
-          <div className="flex justify-center pt-3 pb-2 cursor-grab">
+          {/* Drag Handle — touch events ONLY here trigger swipe-to-close */}
+          <div
+            className="flex justify-center pt-3 pb-2 cursor-grab touch-none select-none"
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+          >
             <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
           </div>
 
-          {/* Close Button */}
-          <div className="flex justify-end px-4 pb-2">
+          {/* Close Button row — also draggable */}
+          <div
+            className="flex justify-end px-4 pb-2 touch-none select-none"
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+          >
             <Button
               variant="ghost"
               size="icon"
@@ -176,8 +192,8 @@ export default function ArticleDetailModal({ article, isOpen, onClose }: Article
             </Button>
           </div>
 
-          {/* Content */}
-          <div className="overflow-y-auto flex-1 px-4 pb-8">
+          {/* Scrollable Content — no drag handlers here */}
+          <div className="overflow-y-auto flex-1 px-4 pb-8 overscroll-contain">
             <ModalContent
               article={article}
               publishedDate={publishedDate}

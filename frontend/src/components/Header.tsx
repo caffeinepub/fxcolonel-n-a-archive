@@ -39,11 +39,13 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-charcoal/95 backdrop-blur-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand — text only, no logo/icon */}
+          {/* Brand — logo image */}
           <Link to="/" className="flex items-center">
-            <span className="font-serif text-xl font-bold text-gold tracking-wide">
-              FX Colonel
-            </span>
+            <img
+              src="https://fxcolonelpipsnetwork.com/logo-dark.png"
+              alt="FX Colonel Pips Network"
+              className="h-9 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Nav */}

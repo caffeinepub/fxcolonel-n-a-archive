@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["DM Sans", "system-ui", "sans-serif"],
-        serif: ["DM Serif Display", "Georgia", "serif"],
+        sans: ["Roboto", "system-ui", "sans-serif"],
+        serif: ["Roboto", "system-ui", "sans-serif"],
       },
       colors: {
         gold: "var(--gold)",

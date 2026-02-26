@@ -1,18 +1,16 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Project with article publishing functionality. User is experiencing a persistent bug where publishing articles/drafts is not working.",
+  "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [
-    "Publishing articles/drafts is not working — publish action fails to publish content"
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-fix-the-frontend-publish-toggle-publish-action-in-articlelistview-and-articleeditor-so-that-the-mutation-correctly-calls-the-backend-publish-endpoint-awaits-the-result-and-invalidates-refetches-the-article-list-query-to-reflect-the-updated-published-status-in-the-ui",
-      "title": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "id": "feature-remove-the-built-with-caffeine-ai-or-built-with-love-using-caffeine-ai-attribution-text-and-any-associated-elements-from-the-footer-component-so-it-no-longer-appears-on-any-page",
+      "title": "Remove the 'Built with caffeine.ai' (or 'Built with love using caffeine.ai') attribution text and any associated elements from the Footer component so it no longer appears on any page.",
       "reqIds": [
-        "REQ-2"
+        "REQ-1"
       ],
       "version": 1
     }
@@ -20,14 +18,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix the backend publish logic so that calling the publish action on an article or draft correctly updates its status to published and persists the change in stable storage. Ensure the publish update function returns a success result and that the published flag/status is correctly set on the article record.",
-      "reqIds": [
-        "REQ-1"
-      ],
+      "summary": "Remove 'Built with love using caffeine.ai' section from footer on all pages",
+      "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Fix article/draft publishing — publish action not persisting",
+  "projectName": "Remove 'Built with caffeine.ai' attribution from footer",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

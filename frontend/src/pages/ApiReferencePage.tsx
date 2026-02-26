@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Code2, Terminal, Globe, Lock, BookOpen, Copy, Check } from 'lucide-react';
+import { Code2, Terminal, Globe, Lock, BookOpen, Copy, Check, User, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 function CodeBlock({ code, language = 'typescript' }: { code: string; language?: string }) {
@@ -109,8 +109,14 @@ const page = await backend.getPublishedArticles(0n, 9n);
 // Get article by slug
 const article = await backend.getArticleBySlug("my-article-slug");
 
+// Get article by ID
+const byId = await backend.getArticleById(1n);
+
 // Search articles
-const results = await backend.searchArticles("forex");`;
+const results = await backend.searchArticles("forex");
+
+// Get hero image URL
+const heroUrl = await backend.getHeroImage();`;
 
   const httpExample = `// HTTP Query Interface (via IC HTTP Gateway)
 // GET https://<canister-id>.raw.ic0.app/api/articles
@@ -122,22 +128,81 @@ const response = await fetch(
 );
 const articles = await response.json();`;
 
-  const articleType = `type Article = {
+  const articleType = `// Article status enum
+enum ArticleStatus {
+  published = "published",
+  draft = "draft",
+}
+
+// User role enum
+enum UserRole {
+  admin = "admin",
+  user = "user",
+  guest = "guest",
+}
+
+// ExternalBlob — used for cover images and inline images
+class ExternalBlob {
+  getBytes(): Promise<Uint8Array>;
+  getDirectURL(): string;
+  static fromURL(url: string): ExternalBlob;
+  static fromBytes(blob: Uint8Array): ExternalBlob;
+  withUploadProgress(
+    onProgress: (percentage: number) => void
+  ): ExternalBlob;
+}
+
+type ArticleBody = {
+  rawHtml: string;
+  blocks: Block[];
+  attachments: Attachment[];
+};
+
+type Block = {
+  content: string;
+  style: {
+    color?: string;
+    fontSize?: bigint;
+    fontWeight?: string;
+    background?: string;
+  };
+  layout?: {
+    columns?: bigint;
+    alignment?: string;
+    padding?: bigint;
+  };
+  metadata?: {
+    tag?: string;
+    attributes?: string;
+  };
+};
+
+type Attachment = {
+  url: string;
+  size: bigint;
+  type: string;       // MIME type
+  caption?: string;
+};
+
+type Article = {
   id: bigint;
   title: string;
   slug: string;
-  body: {
-    rawHtml: string;
-    blocks: Block[];
-    attachments: Attachment[];
-  };
-  coverImageUrl: string;
+  body: ArticleBody;
+  coverImageUrl?: ExternalBlob; // optional blob; call .getDirectURL() for <img src>
+  inlineImages: ExternalBlob[]; // embedded images within the article body
   imageUrls: string[];
   seoKeywords: string[];
   author: string;
-  publishedAt?: bigint; // nanoseconds since epoch
-  updatedAt: bigint;    // nanoseconds since epoch
-  status: "published" | "draft";
+  publishedAt?: bigint;  // nanoseconds since epoch; undefined when draft
+  updatedAt: bigint;     // nanoseconds since epoch
+  status: ArticleStatus;
+};
+
+type UserProfile = {
+  name: string;
+  bio?: string;
+  avatarUrl?: string;
 };`;
 
   return (
@@ -151,8 +216,9 @@ const articles = await response.json();`;
           </h1>
         </div>
         <p className="text-muted-foreground font-sans leading-relaxed">
-          FxColonel N/A Archive exposes a public Candid interface on the Internet Computer.
+          FX Colonel exposes a public Candid interface on the Internet Computer.
           External applications can query articles without authentication using the IC agent or HTTP gateway.
+          Write operations require admin authentication via Internet Identity.
         </p>
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className="border-green-500/40 text-green-400 bg-green-500/10 text-xs">
@@ -178,7 +244,7 @@ const articles = await response.json();`;
             name="getPublishedArticles"
             params="page: bigint, pageSize: bigint"
             returns="Article[]"
-            description="Returns a paginated list of published articles. Use page=0 for the first page."
+            description="Returns a paginated list of published articles. Use page=0n for the first page."
             example={`const articles = await backend.getPublishedArticles(0n, 9n);`}
           />
           <EndpointCard
@@ -186,7 +252,7 @@ const articles = await response.json();`;
             name="getLatestArticles"
             params="limit: bigint"
             returns="Article[]"
-            description="Returns the most recently published articles, sorted by publish date descending."
+            description="Returns the most recently published articles up to the given limit, sorted by publish date descending."
             example={`const latest = await backend.getLatestArticles(5n);`}
           />
           <EndpointCard
@@ -194,7 +260,7 @@ const articles = await response.json();`;
             name="getArticleBySlug"
             params="slug: string"
             returns="Article | null"
-            description="Returns a single published article matching the given URL slug, or null if not found."
+            description="Returns a single published article matching the given URL slug, or null if not found or not published."
             example={`const article = await backend.getArticleBySlug("my-article-slug");`}
           />
           <EndpointCard
@@ -202,7 +268,7 @@ const articles = await response.json();`;
             name="getArticleById"
             params="id: bigint"
             returns="Article | null"
-            description="Returns a single published article by its numeric ID, or null if not found."
+            description="Returns a single published article by its numeric ID, or null if not found or not published."
             example={`const article = await backend.getArticleById(1n);`}
           />
           <EndpointCard
@@ -210,8 +276,16 @@ const articles = await response.json();`;
             name="searchArticles"
             params="keyword: string"
             returns="Article[]"
-            description="Full-text search across article titles, body HTML, and SEO keywords. Returns matching published articles."
+            description="Full-text search across article titles, body HTML, and SEO keywords. Returns matching published articles only."
             example={`const results = await backend.searchArticles("forex strategy");`}
+          />
+          <EndpointCard
+            method="query"
+            name="getHeroImage"
+            params="(none)"
+            returns="string"
+            description="Returns the current hero banner image URL. Returns an empty string if no hero image has been set."
+            example={`const heroUrl = await backend.getHeroImage();`}
           />
         </div>
       </Section>
@@ -219,50 +293,146 @@ const articles = await response.json();`;
       {/* Admin Endpoints */}
       <Section title="Admin-Only Endpoints" icon={<Lock size={18} />}>
         <p className="text-sm text-muted-foreground font-sans">
-          These endpoints require the caller to be the admin principal (first authenticated user).
-          They will trap with an authorization error for non-admin callers.
+          These endpoints require the caller to be the registered admin principal (the first authenticated user to call{' '}
+          <code className="text-gold font-mono text-xs">registerFirstAdmin</code>).
+          Non-admin callers will receive an authorization trap error.
         </p>
         <div className="space-y-4">
           <EndpointCard
             method="update"
             name="createArticle"
-            params="title, slug, body, coverImageUrl, imageUrls, seoKeywords, author"
-            returns="bigint (article ID)"
-            description="Creates a new article as a draft. Returns the new article's ID."
+            params="title: string, slug: string, body: ArticleBody, coverImageUrl: ExternalBlob | null, imageUrls: string[], seoKeywords: string[], author: string, inlineImages: ExternalBlob[]"
+            returns="bigint (new article ID)"
+            description="Creates a new article as a draft. Returns the newly assigned article ID. Pass null for coverImageUrl if no cover image."
+            example={`const id = await backend.createArticle(
+  "My Article",
+  "my-article",
+  { rawHtml: "<p>Hello</p>", blocks: [], attachments: [] },
+  null,       // coverImageUrl
+  [],         // imageUrls
+  ["forex"],  // seoKeywords
+  "FX Colonel",
+  []          // inlineImages
+);`}
           />
           <EndpointCard
             method="update"
             name="updateArticle"
-            params="id, title, slug, body, coverImageUrl, imageUrls, seoKeywords, author"
+            params="id: bigint, title: string, slug: string, body: ArticleBody, coverImageUrl: ExternalBlob | null, imageUrls: string[], seoKeywords: string[], author: string, inlineImages: ExternalBlob[]"
             returns="void"
-            description="Updates an existing article's content and metadata."
+            description="Updates an existing article's content and metadata. Preserves the article's current publish status and publishedAt timestamp."
           />
           <EndpointCard
             method="update"
-            name="publishArticle"
-            params="id: bigint"
+            name="togglePublishArticle"
+            params="id: bigint, newStatus: ArticleStatus"
             returns="void"
-            description="Sets an article's status to published and records the publish timestamp."
-          />
-          <EndpointCard
-            method="update"
-            name="unpublishArticle"
-            params="id: bigint"
-            returns="void"
-            description="Reverts an article to draft status."
+            description="Sets an article's status to either published or draft. When publishing, records the current timestamp as publishedAt. When unpublishing, clears publishedAt."
+            example={`import { ArticleStatus } from "./declarations/backend";
+
+// Publish an article
+await backend.togglePublishArticle(1n, ArticleStatus.published);
+
+// Unpublish (revert to draft)
+await backend.togglePublishArticle(1n, ArticleStatus.draft);`}
           />
           <EndpointCard
             method="update"
             name="deleteArticle"
             params="id: bigint"
             returns="void"
-            description="Permanently deletes an article."
+            description="Permanently deletes an article by ID. Traps if the article does not exist."
+            example={`await backend.deleteArticle(1n);`}
+          />
+          <EndpointCard
+            method="update"
+            name="updateHeroImage"
+            params="url: string"
+            returns="void"
+            description="Sets the hero banner image URL displayed on the landing page. Pass an empty string to clear the hero image."
+            example={`await backend.updateHeroImage("https://example.com/hero.jpg");`}
+          />
+        </div>
+      </Section>
+
+      {/* Auth & User Endpoints */}
+      <Section title="Authentication & User Profile" icon={<User size={18} />}>
+        <p className="text-sm text-muted-foreground font-sans">
+          These endpoints manage admin registration and user profiles. Authentication is performed via Internet Identity.
+        </p>
+        <div className="space-y-4">
+          <EndpointCard
+            method="update"
+            name="registerFirstAdmin"
+            params="(none)"
+            returns="boolean"
+            description="Registers the calling authenticated principal as admin if no admin exists yet. Returns true if the caller is now admin, false if the caller is anonymous or another admin is already registered."
+            example={`const isAdmin = await backend.registerFirstAdmin();`}
+          />
+          <EndpointCard
+            method="query"
+            name="isCallerAdmin"
+            params="(none)"
+            returns="boolean"
+            description="Returns true if the calling principal is the registered admin, false otherwise. Safe to call anonymously (returns false)."
+            example={`const isAdmin = await backend.isCallerAdmin();`}
+          />
+          <EndpointCard
+            method="query"
+            name="getCallerUserRole"
+            params="(none)"
+            returns="UserRole"
+            description="Returns the role of the calling principal: 'admin', 'user', or 'guest' (for anonymous callers)."
+            example={`const role = await backend.getCallerUserRole();
+// role === "admin" | "user" | "guest"`}
+          />
+          <EndpointCard
+            method="update"
+            name="assignCallerUserRole"
+            params="user: Principal, role: UserRole"
+            returns="void"
+            description="Assigns a role to a given principal. Requires admin privileges."
+          />
+          <EndpointCard
+            method="query"
+            name="getCallerUserProfile"
+            params="(none)"
+            returns="UserProfile | null"
+            description="Returns the profile for the calling authenticated user, or null if no profile has been saved yet. Requires the caller to have the 'user' role."
+            example={`const profile = await backend.getCallerUserProfile();
+if (profile) {
+  console.log(profile.name, profile.bio);
+}`}
+          />
+          <EndpointCard
+            method="query"
+            name="getUserProfile"
+            params="user: Principal"
+            returns="UserProfile | null"
+            description="Returns the profile for a given principal. Callers may only view their own profile unless they are admin."
+          />
+          <EndpointCard
+            method="update"
+            name="saveCallerUserProfile"
+            params="profile: UserProfile"
+            returns="void"
+            description="Saves or updates the profile for the calling authenticated user. Requires the caller to have the 'user' role."
+            example={`await backend.saveCallerUserProfile({
+  name: "FX Colonel",
+  bio: "Forex analyst and trader.",
+  avatarUrl: undefined,
+});`}
           />
         </div>
       </Section>
 
       {/* Data Types */}
       <Section title="Data Types" icon={<BookOpen size={18} />}>
+        <p className="text-sm text-muted-foreground font-sans">
+          All types are defined in the generated{' '}
+          <code className="text-gold font-mono text-xs">frontend/src/backend.d.ts</code> file.
+          Import them directly rather than redefining.
+        </p>
         <CodeBlock code={articleType} language="typescript" />
       </Section>
 
@@ -294,6 +464,40 @@ const articles = await response.json();`;
               <code className="text-foreground/80">/api/articles/:slug</code>
               <span className="text-muted-foreground text-xs">→ Single article JSON or 404</span>
             </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Notes */}
+      <Section title="Notes & Gotchas" icon={<Shield size={18} />}>
+        <div className="space-y-3 text-sm text-muted-foreground font-sans leading-relaxed">
+          <div className="bg-card border border-border rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-foreground">ExternalBlob images</p>
+            <p>
+              <code className="text-gold font-mono text-xs">coverImageUrl</code> and entries in{' '}
+              <code className="text-gold font-mono text-xs">inlineImages</code> are{' '}
+              <code className="text-gold font-mono text-xs">ExternalBlob</code> instances, not plain strings.
+              Call <code className="text-gold font-mono text-xs">.getDirectURL()</code> to get a usable URL for{' '}
+              <code className="text-gold font-mono text-xs">&lt;img src&gt;</code>.
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-foreground">Timestamps are nanoseconds</p>
+            <p>
+              <code className="text-gold font-mono text-xs">publishedAt</code> and{' '}
+              <code className="text-gold font-mono text-xs">updatedAt</code> are{' '}
+              <code className="text-gold font-mono text-xs">bigint</code> values in nanoseconds since the Unix epoch.
+              Divide by <code className="text-gold font-mono text-xs">1_000_000n</code> to convert to milliseconds for{' '}
+              <code className="text-gold font-mono text-xs">new Date()</code>.
+            </p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4 space-y-2">
+            <p className="font-semibold text-foreground">Admin bootstrap</p>
+            <p>
+              The first authenticated (non-anonymous) principal to call{' '}
+              <code className="text-gold font-mono text-xs">registerFirstAdmin()</code> becomes the permanent admin.
+              Subsequent calls by other principals are no-ops and return false.
+            </p>
           </div>
         </div>
       </Section>

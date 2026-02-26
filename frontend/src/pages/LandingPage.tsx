@@ -40,16 +40,28 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          backgroundImage: heroImageUrl ? `url(${heroImageUrl})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* Semi-transparent overlay — dark enough for legibility, light enough to show the image */}
+      <section className="relative overflow-hidden">
+        {/* Background image layer */}
+        {heroImageUrl && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${heroImageUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        )}
+
+        {/* Blurred mid-layer: blurs the background image */}
+        <div className="absolute inset-0 backdrop-blur-sm" />
+
+        {/* Dark overlay for legibility */}
         <div className="absolute inset-0 bg-black/55" />
+
+        {/* Decorative blurred glow orbs for depth when no image */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-gold/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-16 right-0 w-80 h-80 rounded-full bg-gold/8 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           {/* Mobile: left-aligned; Desktop: centered */}

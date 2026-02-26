@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-frontend-publish-toggle-publish-action-in-articlelistview-and-articleeditor-so-that-the-mutation-correctly-calls-the-backend-publish-endpoint-awaits-the-result-and-invalidates-refetches-the-article-list-query-to-reflect-the-updated-published-status-in-the-ui",
-      "featureTitle": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "featureId": "feature-remove-the-built-with-caffeine-ai-or-built-with-love-using-caffeine-ai-attribution-text-and-any-associated-elements-from-the-footer-component-so-it-no-longer-appears-on-any-page",
+      "featureTitle": "Remove the 'Built with caffeine.ai' (or 'Built with love using caffeine.ai') attribution text and any associated elements from the Footer component so it no longer appears on any page.",
       "files": [
-        "frontend/src/components/ArticleEditor.tsx",
-        "frontend/src/components/ArticleListView.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/Footer.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,7 +17,7 @@
         "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-2"
+        "REQ-1"
       ],
       "confidence": "high"
     }

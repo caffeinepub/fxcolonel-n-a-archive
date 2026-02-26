@@ -1,55 +1,33 @@
 {
   "kind": "build_request",
-  "title": "Fix article/draft publishing — publish action not persisting",
-  "priority": "high",
+  "title": "Remove 'Built with caffeine.ai' attribution from footer",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the backend publish logic so that calling the publish action on an article or draft correctly updates its status to published and persists the change in stable storage. Ensure the publish update function returns a success result and that the published flag/status is correctly set on the article record.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-7"
-        ],
-        "quotes": [
-          "Publishing articles/drafts is still not publishing, FIX THIS"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Calling the publish action on a draft article changes its status to published in the backend.",
-        "The updated published status is persisted across canister calls.",
-        "The backend returns a success/ok result when publishing succeeds.",
-        "Publishing a draft that is already published does not cause an error."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Fix the frontend publish/toggle-publish action in ArticleListView and ArticleEditor so that the mutation correctly calls the backend publish endpoint, awaits the result, and invalidates/refetches the article list query to reflect the updated published status in the UI.",
+      "text": "Remove the 'Built with caffeine.ai' (or 'Built with love using caffeine.ai') attribution text and any associated elements from the Footer component so it no longer appears on any page.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-7"
+          "msg-latest"
         ],
         "quotes": [
-          "Publishing articles/drafts is still not publishing, FIX THIS"
+          "Remove the Built with love using caffeine.ai section at the footer of all pages"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the publish button in ArticleListView triggers the correct backend call and the article status visibly updates in the list without a page reload.",
-        "Clicking save/publish in ArticleEditor correctly calls the publish mutation and shows success feedback.",
-        "After publishing, the draft badge is removed from the article card.",
-        "Error states are surfaced to the user if publishing fails."
+        "The Footer component no longer renders any text or link referencing 'caffeine.ai' or 'Built with love'.",
+        "All pages that include the Footer (LandingPage, AdminDashboard, ApiReferencePage) show no such attribution.",
+        "No other footer content (brand logo, navigation links, trading disclaimer, copyright) is altered."
       ]
     }
   ],
   "constraints": [
-    "Do not change the Article type schema unless strictly necessary to fix the publishing bug.",
-    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui."
+    "Only remove the caffeine.ai attribution; do not modify any other footer content."
   ],
   "nonGoals": [
-    "Adding new article fields or metadata.",
-    "Changing the article editor UI layout.",
-    "Adding categories or featured posts."
+    "Redesigning or restructuring the footer layout.",
+    "Changing any other page sections or components."
   ],
   "imageRequirements": {
     "required": [],
